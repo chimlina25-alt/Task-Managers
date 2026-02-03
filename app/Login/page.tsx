@@ -3,13 +3,28 @@
 import { Field, FieldGroup, FieldLabel, FieldContent } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
+
 
 export default function LoginPage() {
   return (
     <div className="min-h-screen grid grid-cols-2">
 
-      {/* LEFT SIDE */}
-      <div className="bg-pink-100 flex flex-col justify-center px-20">
+      <div className="relative bg-pink-100 flex flex-col justify-center px-20">
+
+        <div className="absolute top-6 left-6 flex items-center gap-3">
+          <Image
+            src="/logo1.png"
+            alt="Logo"
+            width={80}
+            height={80}
+          />
+
+          <span className="text-2xl font-semibold italic">
+            BloomPlan
+          </span>
+        </div>
+
 
         <h1 className="text-5xl font-Italianno mb-6">
           Welcome to BloomPlan !
@@ -30,14 +45,26 @@ export default function LoginPage() {
 
       </div>
 
-      {/* RIGHT SIDE */}
-      <div className="flex items-center justify-center">
+      <div className="relative flex flex-col items-center justify-center">
+
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo1.png"
+            alt="BloomPlan"
+            width={80}
+            height={80}
+          />
+
+          <span className="text-2xl font-semibold italic">
+            BloomPlan
+          </span>
+        </div>
+
+
+
 
         <div className="w-full max-w-sm space-y-5">
 
-          <h2 className="text-xl font-semibold text-center">BloomPlan</h2>
-
-          {/* Social login */}
           <Button variant="outline" className="w-full bg-pink-200 text-black hover:bg-pink-300">
             Login with Apple
           </Button>
@@ -47,7 +74,7 @@ export default function LoginPage() {
           </Button>
 
           <div className="text-center text-sm text-muted-foreground">
-            Or continue with
+            __________Or continue with__________
           </div>
 
           <FieldGroup>
@@ -83,6 +110,6 @@ export default function LoginPage() {
         </div>
       </div>
 
-    </div>
+    </div> 
   )
 }
