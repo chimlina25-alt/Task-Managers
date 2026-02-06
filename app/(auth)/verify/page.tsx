@@ -9,18 +9,19 @@ import {
 
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import Link from "next/link"
 
 export default function Page() {
   return (
     <div className="min-h-screen bg-pink-100 flex items-center justify-center relative">
 
-
+      {/* Logo top left */}
       <div className="absolute top-6 left-6 flex items-center gap-2">
         <Image src="/logo1.png" alt="BloomPlan" width={40} height={40} />
         <span className="font-semibold italic text-lg">BloomPlan</span>
       </div>
 
-
+      {/* Card */}
       <div className="bg-white rounded-[30px] shadow-xl w-[420px] p-10 text-center space-y-4">
 
         <h2 className="text-xl font-semibold">
@@ -40,6 +41,7 @@ export default function Page() {
           </span>
         </p>
 
+        {/* OTP */}
         <div className="flex justify-center py-2">
           <InputOTP maxLength={6}>
             <InputOTPGroup>
@@ -57,11 +59,12 @@ export default function Page() {
             </InputOTPGroup>
           </InputOTP>
         </div>
-
+        
+        <Link href="/dashboard">
         <Button className="w-full bg-red-400 hover:bg-red-500">
           Verify
         </Button>
-
+        </Link>
       </div>
     </div>
   )

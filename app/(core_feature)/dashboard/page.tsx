@@ -5,7 +5,7 @@ import Image from "next/image"
 import {
     LayoutDashboard,
     ClipboardList,
-    Clock,
+    Calendar,
     Bell,
     Search,
 } from "lucide-react"
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/table"
 
 import { BarChart, Bar, XAxis, YAxis } from "recharts"
+import Link from "next/link"
 
 // ---------------- DATA ----------------
 
@@ -71,13 +72,15 @@ export default function Page() {
 
                 {/* RIGHT PROFILE */}
                 <div className="flex flex-col items-center gap-2">
-                    <Image
-                        src="/pf.png"
-                        width={80}
-                        height={80}
-                        alt="user"
-                        className="rounded-full"
-                    />
+                    <Link href="/profile">
+                        <Image
+                            src="/pf.png"
+                            width={80}
+                            height={80}
+                            alt="user"
+                            className="rounded-full"
+                        />
+                    </Link>
                     <span className="text-sm">User Name</span>
                 </div>
 
@@ -87,30 +90,40 @@ export default function Page() {
             <div className="flex flex-1">
 
                 {/* SIDEBAR */}
-                <div className="w-[260px] px-4 py-6">
+                <div className="w-[260px] px-4 py-6 bg-[#fdeaea] border-l">
 
                     {/* SEARCH */}
-                    <div className="relative mb-6">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <div className="flex items-center bg-white rounded-full px-3 py-2 mb-4">
+                        <Search size={16} className="text-gray-400" />
                         <input
                             placeholder="Search"
-                            className="w-full rounded-full pl-9 py-2 text-sm outline-none"
+                            className="ml-2 outline-none text-sm w-full"
                         />
                     </div>
 
                     {/* MENU */}
-                    <div className="space-y-2 text-sm">
+                    <nav className="space-y-2 text-sm">
 
-                        <div className="flex items-center gap-3 bg-[#e8a1a1] px-4 py-2 rounded">
-                            <LayoutDashboard size={18} />
-                            Dashboard
-                        </div>
+                        <MenuItem
+                            icon={<LayoutDashboard size={16} />}
+                            text="Dashboard"
+                            active
+                        />
 
-                        <SidebarItem icon={<ClipboardList size={18} />} label="Task" />
-                        <SidebarItem icon={<Clock size={18} />} label="Due Date" />
-                        <SidebarItem icon={<Bell size={18} />} label="Notification" />
+                        <Link href="/Task">
+                            <MenuItem icon={<ClipboardList size={16} />} text="Task" />
+                        </Link>
+                        <Link href="/schedule">
+                            <MenuItem icon={<Calendar size={16} />} text="Schedule" />
+                        </Link>
+                        <Link href="/Deadline">
+                            <MenuItem icon={<Calendar size={16} />} text="Due Date" />
+                        </Link>
+                        <Link href="/Notification">
+                            <MenuItem icon={<Bell size={16} />} text="Notification" />
+                        </Link>
 
-                    </div>
+                    </nav>
                 </div>
 
                 {/* MAIN CONTENT */}
@@ -119,32 +132,56 @@ export default function Page() {
                     <div className="grid grid-cols-2 gap-6">
 
                         {/* CHART */}
-                        <div className="bg-white rounded-xl shadow p-4">
-                            <h2 className="text-center font-semibold mb-3">Total Task: 6</h2>
+                        <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center">
+                            <h2 className="font-semibold mb-4">Total Task: 6</h2>
 
-                            <ChartContainer config={chartConfig} className="h-[220px]">
+                            <ChartContainer config={chartConfig} className="h-[200px] w-full">
                                 <BarChart data={chartData}>
                                     <XAxis dataKey="name" />
-                                    <YAxis />
+                                    <YAxis hide />
                                     <ChartTooltip content={<ChartTooltipContent />} />
                                     <Bar dataKey="value" fill="#e8a1a1" radius={[6, 6, 0, 0]} />
                                 </BarChart>
                             </ChartContainer>
+
+                            <div className="flex justify-between w-full mt-2 text-sm">
+                                <span>To do</span>
+                                <span>In progress</span>
+                                <span>Done</span>
+                            </div>
                         </div>
 
                         {/* CALENDAR */}
                         <div className="bg-white rounded-xl shadow p-4">
-                            <h2 className="font-semibold mb-2">Your Caring Calendar</h2>
-                            <UiCalendar mode="single" selected={date} onSelect={setDate} />
+                            <h2 className="text-center font-semibold mb-3">Your Caring Calendar</h2>
+
+                            <div className="flex gap-4">
+
+                                {/* LEFT FILTER */}
+                                <div className="text-sm space-y-2">
+                                    <p>Today</p>
+                                    <p>Yesterday</p>
+                                    <p>This Week</p>
+                                    <p>Last 7 Days</p>
+                                    <p>Last 28 Days</p>
+                                    <p>This Month</p>
+                                    <p>Last Month</p>
+                                    <p>This Year</p>
+                                </div>
+
+                                <UiCalendar mode="single" selected={date} onSelect={setDate} />
+                            </div>
                         </div>
 
                         {/* TABLE */}
                         <div className="bg-white rounded-xl shadow p-4">
+
                             <Table>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Activities</TableHead>
                                         <TableHead>Task</TableHead>
+                                        <TableHead>Due Date</TableHead>
                                     </TableRow>
                                 </TableHeader>
 
@@ -153,10 +190,12 @@ export default function Page() {
                                         <TableRow key={task.id}>
                                             <TableCell>{task.title}</TableCell>
                                             <TableCell>{task.status}</TableCell>
+                                            <TableCell>20/01/2026</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
+
                         </div>
 
                         {/* PRIORITY */}
@@ -164,36 +203,47 @@ export default function Page() {
                             <h2 className="font-semibold mb-4">Priority Task</h2>
 
                             <div className="space-y-3">
-                                {priority.map((p) => (
+
+                                {priority.map((p, i) => (
                                     <div
                                         key={p}
-                                        className="bg-[#e8a1a1] text-white px-4 py-2 rounded-md w-[80%]"
+                                        style={{ width: `${60 + i * 5}%` }}
+                                        className="bg-[#e8a1a1] text-white px-4 py-2 rounded-md"
                                     >
                                         {p}
                                     </div>
                                 ))}
+
                             </div>
                         </div>
 
                     </div>
                 </main>
+
             </div>
         </div>
     )
 
 }
 
-function SidebarItem({
+/* COMPONENTS */
+function MenuItem({
     icon,
-    label,
+    text,
+    active,
 }: {
     icon: React.ReactNode
-    label: string
+    text: string
+    active?: boolean
 }) {
     return (
-        <div className="flex items-center gap-3 px-4 py-2 border-t cursor-pointer hover:bg-[#f3caca]">
+        <div
+            className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer ${active ? "bg-[#e1a9a9]" : "hover:bg-[#e9bebe]"
+                }`}
+        >
             {icon}
-            {label}
+            <span>{text}</span>
         </div>
     )
 }
+
