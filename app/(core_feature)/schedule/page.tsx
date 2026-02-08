@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
   LayoutDashboard,
   ClipboardList,
@@ -9,13 +10,56 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
+import Image from "next/image"
 
+/* ---------- HELPERS ---------- */
+function getDaysInMonth(year: number, month: number) {
+  return new Date(year, month + 1, 0).getDate()
+}
+
+function getFirstDayOfMonth(year: number, month: number) {
+  return new Date(year, month, 1).getDay()
+}
+
+/* ---------- PAGE ---------- */
 export default function Page() {
+  const today = new Date()
+
+  const [currentYear, setCurrentYear] = useState(today.getFullYear())
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth())
+  const [selectedDay, setSelectedDay] = useState(today.getDate())
+  const [selectedTime, setSelectedTime] = useState("10:00")
+
+  const daysInMonth = getDaysInMonth(currentYear, currentMonth)
+  const firstDay = getFirstDayOfMonth(currentYear, currentMonth)
+
+  const monthName = new Date(
+    currentYear,
+    currentMonth
+  ).toLocaleString("default", { month: "long" })
+
+  function prevMonth() {
+    if (currentMonth === 0) {
+      setCurrentMonth(11)
+      setCurrentYear((y) => y - 1)
+    } else {
+      setCurrentMonth((m) => m - 1)
+    }
+  }
+
+  function nextMonth() {
+    if (currentMonth === 11) {
+      setCurrentMonth(0)
+      setCurrentYear((y) => y + 1)
+    } else {
+      setCurrentMonth((m) => m + 1)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#fdeaea] flex flex-col">
-      {/* TOP HEADER - EXACT COPY FROM YOUR CODE */}
+      {/* HEADER */}
       <header className="h-[90px] bg-[#f8dede] px-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Image src="/logo1.png" width={80} height={80} alt="logo" />
@@ -35,11 +79,10 @@ export default function Page() {
         </div>
       </header>
 
-      {/* BODY - SIDEBAR LEFT, MAIN CONTENT RIGHT */}
+      {/* BODY */}
       <div className="flex flex-1">
-        {/* SIDEBAR - EXACT COPY FROM YOUR CODE (positioned LEFT) */}
-        <div className="w-[260px] px-4 py-6 bg-[#fdeaea] border-r"> {/* Changed border-l to border-r for left sidebar */}
-          {/* SEARCH */}
+        {/* SIDEBAR */}
+        <aside className="w-[260px] px-4 py-6 bg-[#fdeaea] border-r">
           <div className="flex items-center bg-white rounded-full px-3 py-2 mb-4">
             <Search size={16} className="text-gray-400" />
             <input
@@ -48,13 +91,9 @@ export default function Page() {
             />
           </div>
 
-          {/* MENU - EXACT COPY FROM YOUR CODE */}
           <nav className="space-y-2 text-sm">
             <Link href="/dashboard">
-            <MenuItem 
-              icon={<LayoutDashboard size={16} />}
-              text="Dashboard"
-            />
+              <MenuItem icon={<LayoutDashboard size={16} />} text="Dashboard" />
             </Link>
             <Link href="/Task">
               <MenuItem icon={<ClipboardList size={16} />} text="Task" />
@@ -69,80 +108,93 @@ export default function Page() {
               <MenuItem icon={<Bell size={16} />} text="Notification" />
             </Link>
           </nav>
-        </div>
+        </aside>
 
-        {/* MAIN CONTENT - UNCHANGED FROM ORIGINAL CALENDAR PAGE */}
+        {/* ✅ MAIN CONTENT (THIS FIXES THE EMPTY SPACE) */}
         <main className="flex-1 p-6">
-          {/* REMOVED TOP BAR (profile) since header now contains it */}
-          
-          {/* CALENDAR CARD */}
-          <div className="bg-white rounded-xl p-6 shadow flex gap-6">
-            {/* Calendar */}
+          {/* CALENDAR */}
+          <div className="bg-white rounded-xl p-6 shadow flex gap-6 w-full">
+            {/* CALENDAR GRID */}
             <div className="flex-1">
-              {/* Header */}
               <div className="flex justify-between items-center mb-4">
-                <ChevronLeft className="cursor-pointer" />
-                <h2 className="font-semibold">Sep 2025</h2>
-                <ChevronRight className="cursor-pointer" />
+                <ChevronLeft className="cursor-pointer" onClick={prevMonth} />
+                <h2 className="font-semibold">
+                  {monthName} {currentYear}
+                </h2>
+                <ChevronRight className="cursor-pointer" onClick={nextMonth} />
               </div>
-
-              {/* Days */}
               <div className="grid grid-cols-7 text-center text-xs text-gray-500 mb-2">
-                <div>Su</div>
-                <div>Mo</div>
-                <div>Tu</div>
-                <div>We</div>
-                <div>Th</div>
-                <div>Fr</div>
-                <div>Sa</div>
+                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+                  <div key={d}>{d}</div>
+                ))}
               </div>
 
-              {/* Dates */}
               <div className="grid grid-cols-7 gap-3 text-sm">
-                {calendarDays.map((day, i) => (
-                  <div
-                    key={i}
-                    className={`h-14 flex items-center justify-center rounded-md ${
-                      day === 10
-                        ? "bg-[#e1a9a9] text-white"
-                        : "hover:bg-gray-100"
-                    }`}
-                  >
-                    {day}
-                  </div>
+                {Array.from({ length: firstDay }).map((_, i) => (
+                  <div key={i} />
                 ))}
+
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                  const day = i + 1
+                  const isToday =
+                    day === today.getDate() &&
+                    currentMonth === today.getMonth() &&
+                    currentYear === today.getFullYear()
+
+                  return (
+                    <div
+                      key={day}
+                      onClick={() => setSelectedDay(day)}
+                      className={`h-14 flex items-center justify-center rounded-md cursor-pointer
+                        ${
+                          selectedDay === day
+                            ? "bg-[#e1a9a9] text-white"
+                            : isToday
+                            ? "border border-[#e1a9a9]"
+                            : "hover:bg-gray-100"
+                        }`}
+                    >
+                      {day}
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
-            {/* TIME SLOTS */}
+            {/* TIME */}
             <div className="w-32 space-y-2">
+              <Link href="/schedule_set">
               {times.map((time) => (
                 <div
                   key={time}
-                  className={`text-sm text-center border rounded-md py-1 ${
-                    time === "10:00"
-                      ? "bg-[#e1a9a9] text-white"
-                      : "bg-white"
-                  }`}
+                  onClick={() => setSelectedTime(time)}
+                  className={`text-sm text-center border rounded-md py-1 cursor-pointer
+                    ${
+                      selectedTime === time
+                        ? "bg-[#e1a9a9] text-white"
+                        : "hover:bg-gray-100"
+                    }`}
                 >
                   {time}
                 </div>
               ))}
+             </Link>
             </div>
           </div>
 
-          {/* FOOTER ACTION */}
+          {/* FOOTER */}
           <div className="flex justify-between items-center mt-4">
             <p className="text-sm text-gray-600">
-              Your meeting for Task 2 is booked for Thursday, Sep 10 at 10:00.
+              Your meeting is booked for {monthName} {selectedDay},{" "}
+              {currentYear} at {selectedTime}.
             </p>
+
             <div className="flex gap-2">
-              <button className="px-4 py-1 rounded-md bg-[#e1a9a9] text-white text-sm">
-                Save
-              </button>
+              <Link href="/Task">
               <button className="px-4 py-1 rounded-md bg-[#e1a9a9] text-white text-sm">
                 + Add
               </button>
+              </Link>
             </div>
           </div>
         </main>
@@ -151,7 +203,7 @@ export default function Page() {
   )
 }
 
-/* COMPONENTS - EXACT COPY FROM YOUR CODE */
+/* COMPONENT */
 function MenuItem({
   icon,
   text,
@@ -173,28 +225,10 @@ function MenuItem({
   )
 }
 
-/* DATA - UNCHANGED */
-const calendarDays = [
-  31, 1, 2, 3, 4, 5, 6,
-  7, 8, 9, 10, 11, 12, 13,
-  14, 15, 16, 17, 18, 19, 20,
-  21, 22, 23, 24, 25, 26, 27,
-  28, 29, 30, 1, 2, 3, 4,
-]
-
+/* TIMES */
 const times = [
-  "09:00",
-  "09:15",
-  "09:30",
-  "09:45",
-  "10:00",
-  "10:15",
-  "10:30",
-  "10:45",
-  "11:00",
-  "11:15",
-  "11:30",
-  "11:45",
-  "12:00",
-  "12:15",
+  "09:00","09:15","09:30","09:45",
+  "10:00","10:15","10:30","10:45",
+  "11:00","11:15","11:30","11:45",
+  "12:00","12:15",
 ]

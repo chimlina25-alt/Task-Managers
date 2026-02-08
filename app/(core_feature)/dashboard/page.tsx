@@ -49,6 +49,13 @@ const tasks = [
     { id: 1, title: "Create Task", status: "Company" },
     { id: 2, title: "Done Task", status: "School" },
     { id: 3, title: "Edit Task", status: "New Project" },
+     { id: 1, title: "New Task", status: "Assignment" },
+    { id: 2, title: "Adding Task", status: "Capstone Project" },
+    { id: 3, title: "Manage Task", status: "School" },
+     { id: 1, title: "Create Task", status: "School" },
+    { id: 2, title: "Done Task", status: "School" },
+    { id: 3, title: "Edit Task", status: "New Project" },
+    
 ]
 
 const priority = ["Task1", "Task2", "Task3", "Task4", "Task5", "Task6"]
@@ -56,7 +63,19 @@ const priority = ["Task1", "Task2", "Task3", "Task4", "Task5", "Task6"]
 // ---------------- PAGE ----------------
 
 export default function Page() {
-    const [date, setDate] = React.useState<Date | undefined>(new Date())
+const filters = {
+  Today: 1,
+  Yesterday: 0,
+  "This Week": 0,
+  "Last 7 Days": 0,
+  "Last 28 Days": 0,
+  "This Month": 0,
+  "Last Month": 0,
+  "This Year": 0,
+}
+
+const [date, setDate] = React.useState<Date | undefined>(new Date())
+
 
     return (
         <div className="min-h-screen bg-[#fdeaea] flex flex-col">
@@ -152,26 +171,40 @@ export default function Page() {
                         </div>
 
                         {/* CALENDAR */}
-                        <div className="bg-white rounded-xl shadow p-4">
-                            <h2 className="text-center font-semibold mb-3">Your Caring Calendar</h2>
+<div className="bg-white rounded-xl shadow p-6">
 
-                            <div className="flex gap-4">
+  <h2 className="text-center font-semibold mb-4">
+    Your Caring Calendar
+  </h2>
 
-                                {/* LEFT FILTER */}
-                                <div className="text-sm space-y-2">
-                                    <p>Today</p>
-                                    <p>Yesterday</p>
-                                    <p>This Week</p>
-                                    <p>Last 7 Days</p>
-                                    <p>Last 28 Days</p>
-                                    <p>This Month</p>
-                                    <p>Last Month</p>
-                                    <p>This Year</p>
-                                </div>
+  <div className="flex gap-6">
 
-                                <UiCalendar mode="single" selected={date} onSelect={setDate} />
-                            </div>
-                        </div>
+    {/* LEFT FILTER (dynamic) */}
+    <div className="text-sm space-y-3 min-w-[130px]">
+
+      {Object.entries(filters).map(([key, value]) => (
+        <p key={key}>
+          {key} : {value > 0 ? `${value} tasks` : ""}
+        </p>
+      ))}
+
+    </div>
+
+    {/* CALENDAR FULL WIDTH */}
+    <div className="flex-1">
+
+      <UiCalendar
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        className="w-full"
+      />
+
+    </div>
+
+  </div>
+</div>
+
 
                         {/* TABLE */}
                         <div className="bg-white rounded-xl shadow p-4">
@@ -182,6 +215,7 @@ export default function Page() {
                                         <TableHead>Activities</TableHead>
                                         <TableHead>Task</TableHead>
                                         <TableHead>Due Date</TableHead>
+            
                                     </TableRow>
                                 </TableHeader>
 
@@ -246,4 +280,5 @@ function MenuItem({
         </div>
     )
 }
+
 

@@ -75,12 +75,11 @@ export default function Page() {
           {/* ALERT GRID */}
           <div className="bg-white rounded-xl shadow p-6 mb-10">
             <div className="grid grid-cols-2 gap-4">
-              {[1,2,3,4,5,6].map((i)=>(
+              {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className={`border rounded-lg p-3 text-sm ${
-                    i % 2 === 0 ? "bg-yellow-50" : ""
-                  }`}
+                  className={`border rounded-lg p-3 text-sm ${i % 2 === 0 ? "bg-yellow-50" : ""
+                    }`}
                 >
                   <p className="font-medium">Alert title</p>
                   <p className="text-gray-500">
@@ -93,23 +92,35 @@ export default function Page() {
 
           {/* MEETING SECTION */}
           <h2 className="text-xl font-semibold mb-5">Meeting Schedule</h2>
-          <div className="flex gap-6">
-            <MeetingCard
-              time="8:00 - 10:00 am"
-              title="Meeting Capstone project"
-              color="bg-pink-200"
-            />
-            <MeetingCard
-              time="2:00 - 3:00 pm"
-              title="Product planing"
-              color="bg-pink-300"
-            />
-            <MeetingCard
-              time="3:00 - 5:00 pm"
-              title="Task review"
-              color="bg-pink-200"
-            />
+
+          <div className="flex gap-6 flex-wrap">
+
+            <Link href="/schedule_set">
+              <MeetingCard
+                time="8:00 - 10:00 am"
+                title="Meeting Capstone project"
+                color="bg-pink-200"
+              />
+            </Link>
+
+            <Link href="/schedule_set">
+              <MeetingCard
+                time="2:00 - 3:00 pm"
+                title="Product planning"
+                color="bg-pink-300"
+              />
+            </Link>
+
+            <Link href="/schedule_set">
+              <MeetingCard
+                time="3:00 - 5:00 pm"
+                title="Task review"
+                color="bg-pink-200"
+              />
+            </Link>
+
           </div>
+
         </main>
       </div>
     </div>
@@ -128,9 +139,8 @@ function MenuItem({
 }) {
   return (
     <div
-      className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer ${
-        active ? "bg-[#e1a9a9]" : "hover:bg-[#e9bebe]"
-      }`}
+      className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer ${active ? "bg-[#e1a9a9]" : "hover:bg-[#e9bebe]"
+        }`}
     >
       {icon}
       <span>{text}</span>
