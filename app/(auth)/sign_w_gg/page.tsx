@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export default function Page() {
   const router = useRouter()
@@ -32,7 +33,7 @@ export default function Page() {
           <Image src="/photo_gg.png" alt="logo_google" width={50} height={50} />
 
           <h2 className="text-3xl font-semibold">
-            Sign up
+            Sign in / up
           </h2>
 
           <p className="text-sm text-muted-foreground">
@@ -67,14 +68,14 @@ export default function Page() {
               Learn more
             </span>
           </p>
-
+          <Link href="/verify">
           <Button
             onClick={handleNext}
-            disabled={!isValid}
-            className="self-end bg-pink-300 hover:bg-pink-400 disabled:opacity-50"
+            className="self-end bg-[#e8a1a1]  hover:bg-[#e8a1a1]  disabled:opacity-50"
           >
             Next
           </Button>
+          </Link>
 
         </div>
 

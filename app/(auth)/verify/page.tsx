@@ -61,7 +61,7 @@ export default function Page() {
         </div>
         
         <Link href="/dashboard">
-        <Button className="w-full bg-red-400 hover:bg-red-500">
+        <Button className="w-full bg-[#e8a1a1] hover:bg-red-500">
           Verify
         </Button>
         </Link>

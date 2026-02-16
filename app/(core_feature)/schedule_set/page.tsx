@@ -122,7 +122,7 @@ export default function ScheduleSetPage() {
 
               <button
                 onClick={handleAdd}
-                className="bg-pink-300 hover:bg-pink-400 text-white px-6 py-2 rounded-lg"
+                className="bg-[#e8a1a1] hover:bg-pink-400 text-white px-6 py-2 rounded-lg"
               >
                 Save Schedule
               </button>

@@ -63,19 +63,22 @@ export default function Page() {
           {/* RIGHT SUPPORT BOXES */}
           <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
 
-            <SupportBox
+            <SupportBox 
               title="Stay Organized"
               text="BloomPlan keeps all your tasks and schedules in one place."
+              highlight
             />
 
             <SupportBox
               title="Boost Productivity"
               text="Focus on priorities and track your progress easily."
+              highlight
             />
 
             <SupportBox
               title="Smart Planning"
               text="Plan meetings and deadlines without stress."
+              highlight
             />
 
             <SupportBox
@@ -104,7 +107,7 @@ function SupportBox({
   return (
     <div
       className={`bg-[#e0e0e0] rounded-xl p-6 h-40 ${
-        highlight ? "border-2 border-pink-400" : ""
+        highlight ? "border-2 border-[#e8a1a1] bg-white" : ""
       }`}
     >
       <h3 className="font-semibold mb-2">{title}</h3>

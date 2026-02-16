@@ -5,23 +5,62 @@ import {
   ClipboardList,
   Calendar,
   Bell,
-  Search,
   Plus,
+  Search,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import React from "react"
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabase"
 
 export default function Page() {
+  const [dueTasks, setDueTasks] = useState<any[]>([])
+  const [todoTasks, setTodoTasks] = useState<any[]>([])
+  const [missingTasks, setMissingTasks] = useState<any[]>([])
 
-  // FAKE FRONTEND DATA
-  const todoTasks = [
-    { id: 1, title: "UI Design" },
-    { id: 2, title: "Login Page" },
-    { id: 3, title: "Database Setup" },
-  ]
+  const today = new Date()
+  const todayStr = today.toISOString().slice(0, 10) // YYYY-MM-DD
 
-  const missingTasks: any[] = []
+  /* ---------- FETCH TASKS FROM SUPABASE ---------- */
+  useEffect(() => {
+    fetchTasks()
+  }, [])
+
+  const fetchTasks = async () => {
+    const { data, error } = await supabase
+      .from("tasks")
+      .select("*")
+      .order("due", { ascending: true })
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    if (data) {
+      const due: any[] = []
+      const todo: any[] = []
+      const missing: any[] = []
+
+      data.forEach((task) => {
+        if (!task.due) {
+          // Task with no due date → treat as future to-do
+          todo.push(task)
+        } else if (task.due < todayStr) {
+          // Past due → Missing
+          missing.push(task)
+        } else {
+          // Due today or future → To-Do + Due Alerts
+          due.push(task)
+          todo.push(task)
+        }
+      })
+
+      setDueTasks(due)
+      setTodoTasks(todo)
+      setMissingTasks(missing)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#fdeaea] flex flex-col">
@@ -45,7 +84,6 @@ export default function Page() {
 
         {/* SIDEBAR */}
         <div className="w-[260px] px-4 py-6 bg-[#fdeaea] border-r">
-
           <div className="flex items-center bg-white rounded-full px-3 py-2 mb-4">
             <Search size={16} className="text-gray-400" />
             <input placeholder="Search" className="ml-2 outline-none text-sm w-full" />
@@ -55,17 +93,13 @@ export default function Page() {
             <Link href="/dashboard">
               <MenuItem icon={<LayoutDashboard size={16} />} text="Dashboard" />
             </Link>
-
             <Link href="/Task">
               <MenuItem icon={<ClipboardList size={16} />} text="Task" />
             </Link>
-
             <Link href="/schedule">
               <MenuItem icon={<Calendar size={16} />} text="Schedule" />
             </Link>
-
             <MenuItem icon={<Calendar size={16} />} text="Due Date" active />
-
             <Link href="/Notification">
               <MenuItem icon={<Bell size={16} />} text="Notification" />
             </Link>
@@ -74,7 +108,6 @@ export default function Page() {
 
         {/* MAIN */}
         <main className="flex-1 p-6">
-
           <div className="flex justify-between items-center mb-6">
             <h2 className="font-semibold text-lg">Due Date Alerts</h2>
 
@@ -90,54 +123,47 @@ export default function Page() {
 
             {/* ALERT LIST */}
             <div className="lg:col-span-2 space-y-4">
-              {[1,2,3,4,5,6].map(i => (
-                <AlertCard key={i} />
+              {dueTasks.length === 0 && (
+                <p className="text-sm text-gray-500">No due tasks today or upcoming.</p>
+              )}
+
+              {dueTasks.map(task => (
+                <AlertCard
+                  key={task.id}
+                  title={task.title}
+                  note={task.note}
+                  due={task.due}
+                />
               ))}
             </div>
 
-            {/* CHART */}
+            {/* TO-DO + MISSING */}
             <div className="bg-white rounded-xl p-6 shadow">
 
               <h3 className="font-semibold mb-4">To-Do Tasks</h3>
-
-              <div className="relative w-40 h-40 mx-auto rounded-full bg-[#e1a9a9] mb-4 flex items-center justify-center">
-                <span className="text-white text-lg font-semibold">
-                  {todoTasks.length}
-                </span>
-              </div>
-
-              <div className="text-xs text-center space-y-1 mb-6">
-                {todoTasks.map(task => (
-                  <p key={task.id}>{task.title}</p>
-                ))}
-              </div>
+              {todoTasks.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center">No to-do tasks</p>
+              ) : (
+                <div className="space-y-2 text-xs text-center mb-6">
+                  {todoTasks.map(task => (
+                    <p key={task.id}>{task.title}</p>
+                  ))}
+                </div>
+              )}
 
               <h3 className="font-semibold mb-4">Missing Tasks</h3>
-
               {missingTasks.length === 0 ? (
-                <p className="text-center text-sm text-gray-400">
-                  No missing tasks
-                </p>
+                <p className="text-center text-sm text-gray-400">No missing tasks</p>
               ) : (
-                <div className="relative w-40 h-40 mx-auto rounded-full bg-[#cfe6ee] flex items-center justify-center">
-                  {missingTasks.length}
+                <div className="space-y-2 text-xs text-center mb-6">
+                  {missingTasks.map(task => (
+                    <p key={task.id}>{task.title}</p>
+                  ))}
                 </div>
               )}
 
             </div>
 
-          </div>
-
-          {/* DECOR LINE */}
-          <div className="mt-10">
-            <svg viewBox="0 0 1000 100" className="w-full h-16">
-              <path
-                d="M0 50 Q 50 10 100 50 T 200 50 T 300 50 T 400 50 T 500 50 T 600 50 T 700 50 T 800 50 T 900 50 T 1000 50"
-                fill="none"
-                stroke="#e1a9a9"
-                strokeWidth="2"
-              />
-            </svg>
           </div>
 
         </main>
@@ -146,8 +172,7 @@ export default function Page() {
   )
 }
 
-/* COMPONENTS */
-
+/* ---------- MENU ITEM ---------- */
 function MenuItem({ icon, text, active }: any) {
   return (
     <div className={`flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer ${
@@ -159,15 +184,15 @@ function MenuItem({ icon, text, active }: any) {
   )
 }
 
-function AlertCard() {
+/* ---------- ALERT CARD ---------- */
+function AlertCard({ title, note, due }: { title: string; note?: string; due: string }) {
   return (
     <div className="bg-white p-4 rounded-md shadow-sm flex items-start gap-3">
       <div className="w-4 h-4 rounded-full border mt-1" />
       <div>
-        <h4 className="font-medium text-sm">Alert title</h4>
-        <p className="text-xs text-gray-500">
-          This is an alert with icon, title and description.
-        </p>
+        <h4 className="font-medium text-sm">{title}</h4>
+        <p className="text-xs text-gray-500">{note}</p>
+        <p className="text-xs text-gray-400">Due: {due}</p>
       </div>
     </div>
   )
